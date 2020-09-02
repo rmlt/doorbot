@@ -10,10 +10,11 @@ from time import sleep
 import RPi.GPIO as GPIO
 
 
-INDICATOR_LED_GPIO = 6
-KEY_BUTTON_GPIO = 21
+# GPIO 0-8 have default pull-ups
+# GPIO 9-27 have default pull-downs
+INDICATOR_LED_INPUT_GPIO = 6
+KEY_BUTTON_OUTPUT_GPIO = 21
 
-# 
 MIN_BLINK_PAUSE = 3  # seconds, a blink after at least that time starts a new blinking (phone blinks every 1.2s)
 KEY_BUTTON_PRESS_AT_BLINK_COUNT = 4  # 3.6s
 
@@ -46,10 +47,10 @@ def key_button_loop():
     while key_button_loop_should_run:
         if should_press_key_button:
             should_press_key_button = False
-            GPIO.output(KEY_BUTTON_GPIO, GPIO.HIGH)
+            GPIO.output(KEY_BUTTON_OUTPUT_GPIO, GPIO.HIGH)
             print("button down")
             sleep(KEY_BUTTON_PRESS_DURATION)
-            GPIO.output(KEY_BUTTON_GPIO, GPIO.LOW)
+            GPIO.output(KEY_BUTTON_OUTPUT_GPIO, GPIO.LOW)
             print("button up")
 
         sleep(0.1)
@@ -63,7 +64,7 @@ def led_on_handler(channel):
     now = datetime.now()
 
     sleep(0.05)
-    if GPIO.input(INDICATOR_LED_GPIO) != GPIO.LOW:
+    if GPIO.input(INDICATOR_LED_INPUT_GPIO) != GPIO.LOW:
         print("spurious led event")
         return
 
@@ -96,14 +97,14 @@ if __name__ == "__main__":
 
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(INDICATOR_LED_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(KEY_BUTTON_GPIO, GPIO.OUT)
+    GPIO.setup(INDICATOR_LED_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(KEY_BUTTON_OUTPUT_GPIO, GPIO.OUT)
 
     key_button_thread = Thread(target=key_button_loop)
     key_button_thread.start()
 
     # inverted input, FALLING means LED turned on
-    GPIO.add_event_detect(INDICATOR_LED_GPIO, GPIO.FALLING, callback=led_on_handler)
+    GPIO.add_event_detect(INDICATOR_LED_INPUT_GPIO, GPIO.FALLING, callback=led_on_handler)
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.pause()
