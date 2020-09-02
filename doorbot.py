@@ -14,6 +14,7 @@ import RPi.GPIO as GPIO
 # GPIO 9-27 have default pull-downs
 INDICATOR_LED_INPUT_GPIO = 6
 KEY_BUTTON_OUTPUT_GPIO = 21
+HEARTBEAT_OUTPUT_GPIO = 25
 
 MIN_BLINK_PAUSE = 3  # seconds, a blink after at least that time starts a new blinking (phone blinks every 1.2s)
 KEY_BUTTON_PRESS_AT_BLINK_COUNT = 4  # 3.6s
@@ -31,11 +32,15 @@ def format_time(time):
 
 def signal_handler(sig, frame):
     global key_button_loop_should_run
+    global heartbeat_loop_should_run
     global key_button_thread
+    global heartbeat_thread
 
     print("Cleaning up...")
     key_button_loop_should_run = False
+    heartbeat_loop_should_run = False
     key_button_thread.join()
+    heartbeat_thread.join()
     GPIO.cleanup()
     sys.exit(0)
 
@@ -54,6 +59,16 @@ def key_button_loop():
             print("button up")
 
         sleep(0.1)
+
+
+def heartbeat_loop():
+    global heartbeat_loop_should_run
+
+    while heartbeat_loop_should_run:
+        GPIO.output(HEARTBEAT_OUTPUT_GPIO, GPIO.HIGH)
+        sleep(0.005)
+        GPIO.output(HEARTBEAT_OUTPUT_GPIO, GPIO.LOW)
+        sleep(1.495)
 
 
 def led_on_handler(channel):
@@ -78,19 +93,23 @@ def led_on_handler(channel):
         print(f"blink #{blink_count} @ {format_time(now)}")
 
     if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and HOUR_MIN <= now.hour <= HOUR_MAX:
-        should_press_key_button = True
-        print("setting should_press_key_button = True")
+         should_press_key_button = True
+         print("setting should_press_key_button = True")
 
 
 if __name__ == "__main__":
     global key_button_thread
+    global heartbeat_thread
     global key_button_loop_should_run
+    global heartbeat_loop_should_run
     global should_press_key_button
     global last_led_on_time
     global blink_count
 
     key_button_thread = None
+    heartbeat_thread = None
     key_button_loop_should_run = True
+    heartbeat_loop_should_run = True
     should_press_key_button = False
     last_led_on_time = None
     blink_count = 0
@@ -99,9 +118,13 @@ if __name__ == "__main__":
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(INDICATOR_LED_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(KEY_BUTTON_OUTPUT_GPIO, GPIO.OUT)
+    GPIO.setup(HEARTBEAT_OUTPUT_GPIO, GPIO.OUT)
 
     key_button_thread = Thread(target=key_button_loop)
     key_button_thread.start()
+
+    heartbeat_thread = Thread(target=heartbeat_loop)
+    heartbeat_thread.start()
 
     # inverted input, FALLING means LED turned on
     GPIO.add_event_detect(INDICATOR_LED_INPUT_GPIO, GPIO.FALLING, callback=led_on_handler)
