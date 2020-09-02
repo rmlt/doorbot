@@ -18,6 +18,7 @@ HEARTBEAT_OUTPUT_GPIO = 25
 
 MIN_BLINK_PAUSE = 3  # seconds, a blink after at least that time starts a new blinking (phone blinks every 1.2s)
 KEY_BUTTON_PRESS_AT_BLINK_COUNT = 4  # 3.6s
+KEY_BUTTON_PRESS_AT_BLINK_COUNT_DELAYED = 35  # up to 37
 
 KEY_BUTTON_PRESS_DURATION = 5  # seconds, should be < MIN_BLINK_PAUSE + (KEY_BUTTON_PRESS_AT_BLINK_COUNT - 1) * 1.2
 
@@ -71,6 +72,15 @@ def heartbeat_loop():
         sleep(1.495)
 
 
+def quick_access_allowed(time):
+    # Monday is 0 and Sunday is 6
+    return time.weekday() <= 4 and HOUR_MIN <= time.hour <= HOUR_MAX
+
+
+def delayed_access_allowed(time):
+    return time.weekday() >= 5 and HOUR_MIN <= time.hour <= HOUR_MAX
+
+
 def led_on_handler(channel):
     global should_press_key_button
     global last_led_on_time
@@ -92,9 +102,13 @@ def led_on_handler(channel):
         blink_count += 1
         print(f"blink #{blink_count} @ {format_time(now)}")
 
-    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and HOUR_MIN <= now.hour <= HOUR_MAX:
-         should_press_key_button = True
-         print("setting should_press_key_button = True")
+    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and quick_access_allowed(now):
+        should_press_key_button = True
+        print("setting should_press_key_button = True")
+
+    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT_DELAYED and delayed_access_allowed(now):
+        should_press_key_button = True
+        print("setting should_press_key_button = True")
 
 
 if __name__ == "__main__":
