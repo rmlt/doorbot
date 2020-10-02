@@ -338,11 +338,11 @@ if __name__ == "__main__":
     GPIO.setup(INDICATOR_LED_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(DOORBELL_BUTTON_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-    GPIO.setup(KEY_BUTTON_OUTPUT_GPIO, GPIO.OUT)
+    GPIO.setup(KEY_BUTTON_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(SERVO_POWER_ENABLE_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(SERVO_PWM_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(ERT_CONTACTS_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
-    GPIO.setup(HEARTBEAT_OUTPUT_GPIO, GPIO.OUT)
+    GPIO.setup(HEARTBEAT_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
 
     threads.append(Thread(target=key_button_loop))
     threads.append(Thread(target=doorbell_button_press_processor_loop))
