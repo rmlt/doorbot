@@ -57,11 +57,10 @@ DOOR_HANDLE_UP_SERVO_PULSE_LENGTH = 800  # us
 GPIO_EVENT_DOUBLECHECK_DELAY = 0.03  # s
 BUSY_WAIT_SLEEP_DURATION = 0.05  # s
 
-# TODO Fix pi time zone and adjust times
 DOOR_OPENING_TIME_RANGE = {
-    "downstairs_quick": ("mon-fri", "07:00", "18:00"),  # 8:00..19:00
-    "downstairs_delayed": ("sat-sun", "07:00", "18:00"),  # 8:00..19:00
-    "office": ("mon-fri", "07:45", "18:00"),  # 8:45..19:00
+    "downstairs_immediate": ("mon-fri", "08:00", "19:00"),
+    "downstairs_delayed": ("sat-sun", "09:00", "18:00"),
+    "office": ("mon-fri", "08:45", "19:00"),
 }
 
 
@@ -264,7 +263,7 @@ def led_on_handler(channel):
         blink_count += 1
         # log(f"blink #{blink_count}")
 
-    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and access_allowed("downstairs_quick", now):
+    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and access_allowed("downstairs_immediate", now):
         should_press_key_button = True
     if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT_DELAYED and access_allowed("downstairs_delayed", now):
         should_press_key_button = True
