@@ -251,7 +251,7 @@ def led_on_handler(channel):
     now = datetime.datetime.now()
 
     sleep(GPIO_EVENT_DOUBLECHECK_DELAY)
-    if GPIO.input(INDICATOR_LED_INPUT_GPIO) != GPIO.LOW:
+    if GPIO.input(INDICATOR_LED_INPUT_GPIO) != GPIO.HIGH:
         return  # spurious input spike
 
     if last_led_on_time is None or (now - last_led_on_time).seconds >= MIN_BLINK_PAUSE:
@@ -353,8 +353,7 @@ if __name__ == "__main__":
     for thread in threads:
         thread.start()
 
-    # inverted input, FALLING means LED turned on
-    GPIO.add_event_detect(INDICATOR_LED_INPUT_GPIO, GPIO.FALLING, callback=led_on_handler)
+    GPIO.add_event_detect(INDICATOR_LED_INPUT_GPIO, GPIO.RISING, callback=led_on_handler)
 
     GPIO.add_event_detect(DOORBELL_BUTTON_INPUT_GPIO, GPIO.BOTH, callback=doorbell_button_handler, bouncetime=50)
 
