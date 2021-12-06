@@ -1,0 +1,19 @@
+DOOR_OPENING_TIME_RANGE = {
+    "downstairs_immediate": ("mon-fri", "09:00", "18:00"),
+    "downstairs_delayed": ("sat-sun", "10:00", "15:00"),
+    "office": ("mon-fri", "09:00", "18:00"),
+}
+
+DOOR_OPEN_BUTTON_PRESSES_SECRET = ".-.-"
+DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."
+
+# Bells and whistles
+CHIRPS = {
+    "doorbell": ((608, 0.2), (455, 0.2), (384, 0.2), (455, 0.2), (608, 0.2)),  # original Siedle doorbell sound
+    "key_button_press_confirmation": ((610, 0.1), (915, 0.1)),
+}
+
+# There are two doorbell modes:
+# "chirp"     - play the "doorbell" chirp defined in CHIRPS
+# "doorphone" - use the physical doorphone to ring (sounds better but adds latency)
+DOORBELL_MODE = "chirp"
