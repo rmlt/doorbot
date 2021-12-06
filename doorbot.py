@@ -23,6 +23,7 @@ SERVO_POWER_ENABLE_OUTPUT_GPIO = 20
 SERVO_PWM_OUTPUT_GPIO = 5
 ERT_CONTACTS_OUTPUT_GPIO = 19
 HEARTBEAT_OUTPUT_GPIO = 25
+BUZZER_OUTPUT_GPIO = 16
 
 MIN_BLINK_PAUSE = 3  # seconds   A blink after at least that time starts a new blinking (phone blinks every 1.2s)
 KEY_BUTTON_PRESS_AT_BLINK_COUNT = 4  # =~ 3.6s
@@ -202,6 +203,31 @@ def doorbell_ring_loop():
         sleep(BUSY_WAIT_SLEEP_DURATION)
 
 
+def buzzer_loop():
+    global threads_should_run
+    global buzzer_queue
+
+    while threads_should_run:
+        try:
+            chirp = buzzer_queue.get(block=False)
+
+            # Play the chirp - an iterable containing tuples (frequency [Hz], duration [s])
+            pwm = GPIO.PWM(BUZZER_OUTPUT_GPIO, chirp[0][0])
+            pwm.start(0)
+            pwm.ChangeDutyCycle(50)
+            for freq, duration in chirp:
+                pwm.ChangeFrequency(freq)
+                sleep(duration)
+            pwm.stop(0)
+            GPIO.output(BUZZER_OUTPUT_GPIO, GPIO.LOW)
+
+            buzzer_queue.task_done()
+        except Empty:
+            pass
+
+        sleep(BUSY_WAIT_SLEEP_DURATION)
+
+
 def heartbeat_loop():
     global threads_should_run
 
@@ -232,6 +258,7 @@ def access_allowed(kind, time):
 
 def led_on_handler(channel):
     global threads_should_run
+    global buzzer_queue
     global should_press_key_button
     global last_led_on_time
     global blink_count
@@ -282,6 +309,7 @@ def doorbell_button_handler(channel):
 
 def signal_handler(sig, frame):
     global doorbell_button_event_queue
+    global buzzer_queue
     global threads_should_run
     global threads
 
@@ -292,6 +320,7 @@ def signal_handler(sig, frame):
         thread.join()
 
     doorbell_button_event_queue.join()
+    buzzer_queue.join()
 
     GPIO.cleanup()
     sys.exit(0)
@@ -299,6 +328,7 @@ def signal_handler(sig, frame):
 
 if __name__ == "__main__":
     global doorbell_button_event_queue
+    global buzzer_queue
     global threads
     global threads_should_run
 
@@ -312,6 +342,9 @@ if __name__ == "__main__":
     # Communication doorbell_button_handler => doorbell_button_press_processor_loop
     # stores tuples (press start time, press end time)
     doorbell_button_event_queue = Queue()
+
+    # chirps to be played
+    buzzer_queue = Queue()
 
     threads = []
     threads_should_run = True
@@ -334,12 +367,17 @@ if __name__ == "__main__":
     GPIO.setup(SERVO_PWM_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(ERT_CONTACTS_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(HEARTBEAT_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(BUZZER_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
 
-    threads.append(Thread(target=key_button_loop))
-    threads.append(Thread(target=doorbell_button_press_processor_loop))
-    threads.append(Thread(target=door_servo_loop))
-    threads.append(Thread(target=doorbell_ring_loop))
-    threads.append(Thread(target=heartbeat_loop))
+    for loop in (
+        key_button_loop,
+        doorbell_button_press_processor_loop,
+        door_servo_loop,
+        doorbell_ring_loop,
+        buzzer_loop,
+        heartbeat_loop,
+    ):
+        threads.append(Thread(target=loop))
 
     for thread in threads:
         thread.start()
