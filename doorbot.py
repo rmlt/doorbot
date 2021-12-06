@@ -55,6 +55,8 @@ DOOR_HANDLE_UP_SERVO_PULSE_LENGTH = 800  # us
 GPIO_EVENT_DOUBLECHECK_DELAY = 0.03  # s
 BUSY_WAIT_SLEEP_DURATION = 0.05  # s
 
+assert DOORBELL_MODE in ("chirp", "doorphone")
+
 
 def format_time(time):
     return time.strftime("%d-%m-%Y %H:%M:%S.%f")
@@ -194,11 +196,15 @@ def doorbell_ring_loop():
     while threads_should_run:
         if should_ring_doorbell:
             should_ring_doorbell = False
-            GPIO.output(ERT_CONTACTS_OUTPUT_GPIO, GPIO.HIGH)
-            log("ert contacts connected")
-            sleep(ERT_CONTACTS_CONNECT_DURATION)
-            GPIO.output(ERT_CONTACTS_OUTPUT_GPIO, GPIO.LOW)
-            # log("ert contacts disconnected")
+
+            if DOORBELL_MODE == "chirp":
+                buzzer_queue.put(CHIRPS["doorbell"])
+            elif DOORBELL_MODE == "doorphone":
+                GPIO.output(ERT_CONTACTS_OUTPUT_GPIO, GPIO.HIGH)
+                log("ert contacts connected")
+                sleep(ERT_CONTACTS_CONNECT_DURATION)
+                GPIO.output(ERT_CONTACTS_OUTPUT_GPIO, GPIO.LOW)
+                # log("ert contacts disconnected")
 
         sleep(BUSY_WAIT_SLEEP_DURATION)
 
@@ -281,10 +287,11 @@ def led_on_handler(channel):
         blink_count += 1
         # log(f"blink #{blink_count}")
 
-    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and access_allowed("downstairs_immediate", now):
+    if (blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT and access_allowed("downstairs_immediate", now)) or (
+        blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT_DELAYED and access_allowed("downstairs_delayed", now)
+    ):
         should_press_key_button = True
-    if blink_count == KEY_BUTTON_PRESS_AT_BLINK_COUNT_DELAYED and access_allowed("downstairs_delayed", now):
-        should_press_key_button = True
+        buzzer_queue.put(CHIRPS["key_button_press_confirmation"])
 
 
 def doorbell_button_handler(channel):
