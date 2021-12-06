@@ -1,0 +1,8 @@
+DOOR_OPENING_TIME_RANGE = {
+    "downstairs_immediate": ("mon-fri", "09:00", "18:00"),
+    "downstairs_delayed": ("sat-sun", "10:00", "15:00"),
+    "office": ("mon-fri", "09:00", "18:00"),
+}
+
+DOOR_OPEN_BUTTON_PRESSES_SECRET = ".-.-"
+DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."

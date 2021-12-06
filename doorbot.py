@@ -2,6 +2,7 @@
 
 import datetime
 import re
+from settings import *
 import signal
 import sys
 import threading
@@ -42,10 +43,6 @@ INVALID_PRESS_SEQUENCE_CLEAR_TIMEOUT = datetime.timedelta(seconds=6)  # also max
 # If there are more, the user is most probably trying to enter the code and does not want to ring the bell.
 DOOR_OPEN_BUTTON_DOORBELL_SOUND_MAX_PRESSES = 2
 
-# TODO Read from arguments / env:
-DOOR_OPEN_BUTTON_PRESSES_SECRET = ""
-DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = ""
-
 ERT_CONTACTS_CONNECT_DURATION = 0.4  # s  Duration of simulated doorbell button press
 
 DOOR_HANDLE_MOVEMENT_DURATION = 2  # s
@@ -56,12 +53,6 @@ DOOR_HANDLE_UP_SERVO_PULSE_LENGTH = 800  # us
 
 GPIO_EVENT_DOUBLECHECK_DELAY = 0.03  # s
 BUSY_WAIT_SLEEP_DURATION = 0.05  # s
-
-DOOR_OPENING_TIME_RANGE = {
-    "downstairs_immediate": ("mon-fri", "08:00", "19:00"),
-    "downstairs_delayed": ("sat-sun", "09:00", "18:00"),
-    "office": ("mon-fri", "08:45", "19:00"),
-}
 
 
 def format_time(time):
