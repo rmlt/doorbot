@@ -1,32 +1,24 @@
-Cmp-Mod V01 Created by PcbNew   date = Fri 18 Feb 2022 05:49:37 PM CET
+Cmp-Mod V01 Created by PcbNew   date = Fri 04 Mar 2022 02:47:35 PM CET
 
 BeginCmp
-TimeStamp = 137bca6b-874f-43e3-b202-f2b57e235d86
-Path = /9b9319d5-0f44-47a2-bed1-082ac18a5487
-Reference = C14;
-ValeurCmp = 100n;
-IdModule  = Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P7.50mm;
+TimeStamp = f01316d0-cb71-41f4-90e2-dbebbfe175b3
+Path = /00000000-0000-0000-0000-000061ef411e
+Reference = R7;
+ValeurCmp = 10K;
+IdModule  = Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal;
 EndCmp
 
 BeginCmp
-TimeStamp = 20f1e965-cc56-4edc-8e87-772335b1c3e9
-Path = /973cdbd1-4020-4cc9-8de4-8caf4d7cb28a
-Reference = C15;
-ValeurCmp = 100n;
-IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
-EndCmp
-
-BeginCmp
-TimeStamp = 09426282-1efd-4d6a-a325-8b380ec1f110
-Path = /00000000-0000-0000-0000-0000620721fe
-Reference = C2;
-ValeurCmp = 470n;
-IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
+TimeStamp = 9675bcba-4001-4c4f-af07-32a85229f5c2
+Path = /00000000-0000-0000-0000-000061ef5138
+Reference = R9;
+ValeurCmp = 10K;
+IdModule  = Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal;
 EndCmp
 
 BeginCmp
 TimeStamp = 09617b68-912b-49f7-a965-7e65be7c8cd6
-Path = /00000000-0000-0000-0000-000062187fd1
+Path = /00000000-0000-0000-0000-000061f06076
 Reference = C6;
 ValeurCmp = 100n;
 IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
@@ -41,11 +33,19 @@ IdModule  = Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical;
 EndCmp
 
 BeginCmp
+TimeStamp = 11a983ce-6389-4d6d-940e-7c7318bd9bc3
+Path = /ea68b534-7587-4b23-aa5b-b6cdceb80af1
+Reference = FB1;
+ValeurCmp = Bead;
+IdModule  = Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal;
+EndCmp
+
+BeginCmp
 TimeStamp = 123702b0-bd87-4136-9f5a-52efdf4c28ac
-Path = /ddf628ba-affb-4cbb-b545-198f5f05203d
+Path = /00000000-0000-0000-0000-0000621098dd
 Reference = C11;
-ValeurCmp = 100u;
-IdModule  = Capacitor_THT:CP_Radial_D10.0mm_P2.50mm;
+ValeurCmp = 100n;
+IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
 EndCmp
 
 BeginCmp
@@ -54,6 +54,14 @@ Path = /00000000-0000-0000-0000-00006207116d
 Reference = R14;
 ValeurCmp = 47K;
 IdModule  = Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical;
+EndCmp
+
+BeginCmp
+TimeStamp = 137bca6b-874f-43e3-b202-f2b57e235d86
+Path = /00000000-0000-0000-0000-000062109e1a
+Reference = C14;
+ValeurCmp = 100n;
+IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
 EndCmp
 
 BeginCmp
@@ -82,10 +90,18 @@ EndCmp
 
 BeginCmp
 TimeStamp = 20094ac9-a4f6-4030-898c-50b42e8d48a3
-Path = /00000000-0000-0000-0000-000061f06076
+Path = /00000000-0000-0000-0000-000061f0e28a
 Reference = C5;
 ValeurCmp = 100n;
 IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 20f1e965-cc56-4edc-8e87-772335b1c3e9
+Path = /ddf628ba-affb-4cbb-b545-198f5f05203d
+Reference = C15;
+ValeurCmp = 100u;
+IdModule  = Capacitor_THT:CP_Radial_D10.0mm_P2.50mm;
 EndCmp
 
 BeginCmp
@@ -106,10 +122,10 @@ EndCmp
 
 BeginCmp
 TimeStamp = 58c2c1d5-963c-4012-b6c4-f399c32ff52c
-Path = /3f0a1083-fbda-4ef5-b712-da83b722938c
+Path = /9b9319d5-0f44-47a2-bed1-082ac18a5487
 Reference = C7;
-ValeurCmp = 470u;
-IdModule  = Capacitor_THT:CP_Radial_D12.5mm_P5.00mm;
+ValeurCmp = 100n;
+IdModule  = Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P7.50mm;
 EndCmp
 
 BeginCmp
@@ -138,10 +154,10 @@ EndCmp
 
 BeginCmp
 TimeStamp = 67e34ea6-8622-4b7d-b2b0-6051b817eaca
-Path = /7def12c0-6c41-466e-a102-6d8965ffdf96
+Path = /3f0a1083-fbda-4ef5-b712-da83b722938c
 Reference = C12;
-ValeurCmp = 22u;
-IdModule  = Capacitor_SMD:C_1210_3225Metric;
+ValeurCmp = 2200u 10V;
+IdModule  = Capacitor_THT:CP_Radial_D12.5mm_P5.00mm;
 EndCmp
 
 BeginCmp
@@ -170,9 +186,9 @@ EndCmp
 
 BeginCmp
 TimeStamp = 7bca45fd-fdc8-42b0-a06b-1e86b09dee78
-Path = /00000000-0000-0000-0000-000061f0cf9e
+Path = /00000000-0000-0000-0000-0000620721fe
 Reference = C3;
-ValeurCmp = 100n;
+ValeurCmp = 470n;
 IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
 EndCmp
 
@@ -201,16 +217,8 @@ IdModule  = Package_TO_SOT_THT:TO-92_Inline_Wide;
 EndCmp
 
 BeginCmp
-TimeStamp = 87a94b86-210e-4621-82a9-5d06b0e66ff9
-Path = /00000000-0000-0000-0000-000061f5514d
-Reference = C1;
-ValeurCmp = 22u;
-IdModule  = Capacitor_SMD:C_1210_3225Metric;
-EndCmp
-
-BeginCmp
 TimeStamp = 887d0669-7224-46c3-b959-0cacd5c8d6af
-Path = /2f28b0db-d4f5-43f6-9931-bc649cfd4f51
+Path = /70a09bf0-5e27-4706-81bb-98a5cf06fcc9
 Reference = U3;
 ValeurCmp = 74HC14;
 IdModule  = Package_DIP:DIP-14_W7.62mm;
@@ -218,26 +226,18 @@ EndCmp
 
 BeginCmp
 TimeStamp = 8a9992f2-3383-4f5a-b188-5770e2d95fe6
-Path = /53cceafe-8f29-41dd-921f-eb6df5000485
+Path = /aa7e6663-024c-4aa5-bfd8-01d9b0a3265f
 Reference = C9;
-ValeurCmp = 470u;
-IdModule  = Capacitor_THT:CP_Radial_D12.5mm_P5.00mm;
-EndCmp
-
-BeginCmp
-TimeStamp = 95d3c179-2c40-4ee5-a428-96b61c39fcce
-Path = /00000000-0000-0000-0000-000061f0e28a
-Reference = C4;
 ValeurCmp = 100n;
 IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
 EndCmp
 
 BeginCmp
-TimeStamp = 9675bcba-4001-4c4f-af07-32a85229f5c2
-Path = /00000000-0000-0000-0000-000061ef5138
-Reference = R9;
-ValeurCmp = 10K;
-IdModule  = Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal;
+TimeStamp = 95d3c179-2c40-4ee5-a428-96b61c39fcce
+Path = /00000000-0000-0000-0000-000061f0cf9e
+Reference = C4;
+ValeurCmp = 100n;
+IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
 EndCmp
 
 BeginCmp
@@ -314,7 +314,7 @@ EndCmp
 
 BeginCmp
 TimeStamp = aefe8587-f5a8-4fea-bca7-ee8065871959
-Path = /00000000-0000-0000-0000-0000621098dd
+Path = /973cdbd1-4020-4cc9-8de4-8caf4d7cb28a
 Reference = C8;
 ValeurCmp = 100n;
 IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
@@ -370,10 +370,10 @@ EndCmp
 
 BeginCmp
 TimeStamp = e1b0a2ac-c1eb-4688-86ac-df2c0fb3409a
-Path = /aa7e6663-024c-4aa5-bfd8-01d9b0a3265f
+Path = /53cceafe-8f29-41dd-921f-eb6df5000485
 Reference = C13;
-ValeurCmp = 100n;
-IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
+ValeurCmp = 1000u 16V;
+IdModule  = Capacitor_THT:CP_Radial_D12.5mm_P5.00mm;
 EndCmp
 
 BeginCmp
@@ -409,16 +409,8 @@ IdModule  = Package_DIP:DIP-4_W7.62mm;
 EndCmp
 
 BeginCmp
-TimeStamp = f01316d0-cb71-41f4-90e2-dbebbfe175b3
-Path = /00000000-0000-0000-0000-000061ef411e
-Reference = R7;
-ValeurCmp = 10K;
-IdModule  = Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal;
-EndCmp
-
-BeginCmp
 TimeStamp = f3fb03b1-4709-4d18-89b2-e94f4e88258f
-Path = /00000000-0000-0000-0000-000062109e1a
+Path = /00000000-0000-0000-0000-000062187fd1
 Reference = C10;
 ValeurCmp = 100n;
 IdModule  = Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm;
@@ -454,6 +446,22 @@ Path = /04d76769-adc7-4f3a-80cc-0d4447fad9ac
 Reference = J9;
 ValeurCmp = UI BUTTON;
 IdModule  = Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical;
+EndCmp
+
+BeginCmp
+TimeStamp = 09426282-1efd-4d6a-a325-8b380ec1f110
+Path = /00000000-0000-0000-0000-000061f5514d
+Reference = C2;
+ValeurCmp = 22u;
+IdModule  = Capacitor_SMD:C_1210_3225Metric;
+EndCmp
+
+BeginCmp
+TimeStamp = 87a94b86-210e-4621-82a9-5d06b0e66ff9
+Path = /7def12c0-6c41-466e-a102-6d8965ffdf96
+Reference = C1;
+ValeurCmp = 22u;
+IdModule  = Capacitor_SMD:C_1210_3225Metric;
 EndCmp
 
 EndListe
