@@ -11,6 +11,7 @@ DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."
 CHIRPS = {
     "doorbell": ((608, 0.2), (455, 0.2), (384, 0.2), (455, 0.2), (608, 0.2)),  # original Siedle doorbell sound
     "key_button_press_confirmation": ((610, 0.1), (915, 0.1)),
+    "test": ((440, 0.1),),  # test A4 beep
 }
 
 # There are two doorbell modes:
