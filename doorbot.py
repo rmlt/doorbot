@@ -15,7 +15,7 @@ import RPi.GPIO as GPIO
 
 # GPIO 0-8 have default pull-ups
 # GPIO 9-27 have default pull-downs
-INDICATOR_LED_INPUT_GPIO = 6
+INDICATOR_LED_INPUT_GPIO = 6  # siedle
 DOORBELL_BUTTON_INPUT_GPIO = 26
 UI_BUTTON_INPUT_GPIO = 13
 
@@ -23,7 +23,7 @@ KEY_BUTTON_OUTPUT_GPIO = 21
 SERVO_POWER_ENABLE_OUTPUT_GPIO = 20
 SERVO_PWM_OUTPUT_GPIO = 5
 ERT_CONTACTS_OUTPUT_GPIO = 19
-HEARTBEAT_OUTPUT_GPIO = 25
+HEARTBEAT_OUTPUT_GPIO = 25  # ui led
 BUZZER_OUTPUT_GPIO = 16
 
 MIN_BLINK_PAUSE = 3  # seconds   A blink after at least that time starts a new blinking (phone blinks every 1.2s)
@@ -32,11 +32,11 @@ KEY_BUTTON_PRESS_AT_BLINK_COUNT_DELAYED = 35  # up to 37
 KEY_BUTTON_PRESS_DURATION = 5  # seconds, should be < MIN_BLINK_PAUSE + (KEY_BUTTON_PRESS_AT_BLINK_COUNT - 1) * 1.2
 
 # TODO Make it adaptive
-SHORT_PRESS_MAX = datetime.timedelta(seconds=0.9)
+SHORT_PRESS_MAX = datetime.timedelta(seconds=0.8)
 LONG_PRESS_MIN = datetime.timedelta(seconds=1.6)
 
 # Shorter for single press to not delay the doorbell after a single press
-SINGLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY = datetime.timedelta(seconds=1)
+SINGLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY = datetime.timedelta(seconds=0.8)
 MULTIPLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY = datetime.timedelta(seconds=2)
 
 INVALID_PRESS_SEQUENCE_CLEAR_TIMEOUT = datetime.timedelta(seconds=6)  # also max recognizable long press duration
@@ -369,6 +369,7 @@ if __name__ == "__main__":
 
     GPIO.setup(INDICATOR_LED_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(DOORBELL_BUTTON_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(UI_BUTTON_INPUT_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     GPIO.setup(KEY_BUTTON_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(SERVO_POWER_ENABLE_OUTPUT_GPIO, GPIO.OUT, initial=GPIO.LOW)
