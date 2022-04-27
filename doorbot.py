@@ -161,6 +161,27 @@ def doorbell_button_press_processor_loop():
         sleep(BUSY_WAIT_SLEEP_DURATION)
 
 
+# This is a test implementation that beeps on every button state change
+def ui_button_press_processor_loop():
+    global ui_button_event_queue
+
+    ui_button_events = []
+
+    while threads_should_run:
+        try:
+            item = ui_button_event_queue.get(block=False)
+            ui_button_events.append(item)
+            ui_button_event_queue.task_done()
+        except Empty:
+            pass
+
+        if len(ui_button_events) > 0:
+            buzzer_queue.put(CHIRPS["test"])
+            ui_button_events = []
+
+        sleep(BUSY_WAIT_SLEEP_DURATION)
+
+
 # The servo PWM signal buffer in our hardware inverts the signal, this is taken into account
 def door_servo_loop():
     global threads_should_run
@@ -315,8 +336,29 @@ def doorbell_button_handler(channel):
             doorbell_button_event_queue.put(("up", now))
 
 
+def ui_button_handler(channel):
+    global ui_button_event_queue
+    global threads_should_run
+
+    if not threads_should_run:
+        return
+
+    now = datetime.datetime.now()
+
+    if GPIO.input(UI_BUTTON_INPUT_GPIO) == GPIO.HIGH:
+        sleep(GPIO_EVENT_DOUBLECHECK_DELAY)
+        if GPIO.input(UI_BUTTON_INPUT_GPIO) == GPIO.HIGH:
+            ui_button_event_queue.put(("down", now))
+
+    if GPIO.input(UI_BUTTON_INPUT_GPIO) == GPIO.LOW:
+        sleep(GPIO_EVENT_DOUBLECHECK_DELAY)
+        if GPIO.input(UI_BUTTON_INPUT_GPIO) == GPIO.LOW:
+            ui_button_event_queue.put(("up", now))
+
+
 def signal_handler(sig, frame):
     global doorbell_button_event_queue
+    global ui_button_event_queue
     global buzzer_queue
     global threads_should_run
     global threads
@@ -328,6 +370,7 @@ def signal_handler(sig, frame):
         thread.join()
 
     doorbell_button_event_queue.join()
+    ui_button_event_queue.join()
     buzzer_queue.join()
 
     GPIO.cleanup()
@@ -336,6 +379,7 @@ def signal_handler(sig, frame):
 
 if __name__ == "__main__":
     global doorbell_button_event_queue
+    global ui_button_event_queue
     global buzzer_queue
     global threads
     global threads_should_run
@@ -350,6 +394,9 @@ if __name__ == "__main__":
     # Communication doorbell_button_handler => doorbell_button_press_processor_loop
     # stores tuples (press start time, press end time)
     doorbell_button_event_queue = Queue()
+
+    # Presses of the UI button, stores tuples (press start time, press end time)
+    ui_button_event_queue = Queue()
 
     # chirps to be played
     buzzer_queue = Queue()
@@ -381,6 +428,7 @@ if __name__ == "__main__":
     for loop in (
         key_button_loop,
         doorbell_button_press_processor_loop,
+        ui_button_press_processor_loop,
         door_servo_loop,
         doorbell_ring_loop,
         buzzer_loop,
@@ -394,6 +442,8 @@ if __name__ == "__main__":
     GPIO.add_event_detect(INDICATOR_LED_INPUT_GPIO, GPIO.RISING, callback=led_on_handler)
 
     GPIO.add_event_detect(DOORBELL_BUTTON_INPUT_GPIO, GPIO.BOTH, callback=doorbell_button_handler, bouncetime=50)
+
+    GPIO.add_event_detect(UI_BUTTON_INPUT_GPIO, GPIO.BOTH, callback=ui_button_handler, bouncetime=50)
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.pause()
