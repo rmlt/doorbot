@@ -12,10 +12,14 @@ DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."  # works anytime
 CHIRPS = {
     "doorbell": ((608, 0.2), (455, 0.2), (384, 0.2), (455, 0.2), (608, 0.2)),  # original Siedle doorbell sound
     "key_button_press_confirmation": ((610, 0.1), (915, 0.1)),
-    "test": ((440, 0.1),),  # test A4 beep
+    "beep": ((440, 0.02),),  # plain A4 beep
 }
 
 # There are two doorbell modes:
 # "chirp"     - play the "doorbell" chirp defined in CHIRPS
 # "doorphone" - use the physical doorphone to ring (sounds better but adds latency)
 DOORBELL_MODE = "chirp"
+
+# Specifies the timeout for free office access during which any doorbell button press opens the office door ("Friday
+# evening party mode"). After this time the doorbot switches to normal mode (requires DOOR_OPEN_BUTTON_PRESSES_SECRET).
+FREE_OFFICE_ACCESS_DURATION = 3600  # s
