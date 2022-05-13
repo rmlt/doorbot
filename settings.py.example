@@ -4,8 +4,9 @@ DOOR_OPENING_TIME_RANGE = {
     "office": ("mon-fri", "09:00", "18:00"),
 }
 
-DOOR_OPEN_BUTTON_PRESSES_SECRET = ".-.-"
-DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."
+# Secret doorbell button keypress sequences that open the office door
+DOOR_OPEN_BUTTON_PRESSES_SECRET = ".-.-"  # works during DOOR_OPENING_TIME_RANGE
+DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."  # works anytime
 
 # Bells and whistles
 CHIRPS = {
