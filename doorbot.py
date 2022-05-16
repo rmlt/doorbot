@@ -56,6 +56,11 @@ DOOR_HANDLE_UP_SERVO_PULSE_LENGTH = 800  # us
 GPIO_EVENT_DOUBLECHECK_DELAY = 0.03  # s
 BUSY_WAIT_SLEEP_DURATION = 0.05  # s
 
+HEARTBEAT_PERIOD = 1.5  # s
+HEARTBEAT_PERIOD_FAST = 0.25  # s
+HEARTBEAT_BLINK = 0.005  # s
+
+
 assert DOORBELL_MODE in ("chirp", "doorphone")
 
 
@@ -86,7 +91,7 @@ def key_button_loop():
 def doorbell_button_press_processor_loop():
     global doorbell_button_event_queue
     global should_open_door
-    global should_ring_doorbell
+    global free_office_access
 
     doorbell_button_events = []
 
@@ -117,6 +122,41 @@ def doorbell_button_press_processor_loop():
         durations = event_durations(doorbell_button_events)
         return len(durations) == len(secret) and presses(durations) == secret
 
+    def process_button_event_sequence():
+        global should_open_door
+        global should_ring_doorbell
+        nonlocal doorbell_button_events
+
+        if is_complete_event_sequence(doorbell_button_events) and (
+            (
+                len(doorbell_button_events) == 2
+                and now - doorbell_button_events[-1][1] > SINGLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY
+            )
+            or (
+                len(doorbell_button_events) > 2
+                and now - doorbell_button_events[-1][1] > MULTIPLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY
+            )
+        ):
+            log(f"processing events: {events_str(doorbell_button_events)}")
+            if events_match_presses_secret(doorbell_button_events, DOOR_OPEN_BUTTON_PRESSES_SECRET):
+                if access_allowed("office", now):
+                    should_open_door = True
+            elif events_match_presses_secret(doorbell_button_events, DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE):
+                should_open_door = True
+            else:
+                if len(doorbell_button_events) <= 2 * DOOR_OPEN_BUTTON_DOORBELL_SOUND_MAX_PRESSES:
+                    should_ring_doorbell = True
+
+            doorbell_button_events = []
+
+        if (
+            not is_complete_event_sequence(doorbell_button_events)
+            and now - doorbell_button_events[-1][1] > INVALID_PRESS_SEQUENCE_CLEAR_TIMEOUT
+        ):
+            log(f"resetting invalid events: {events_str(doorbell_button_events)}")
+            # Either spurious GPIO event or too much switch bounce. Do nothing, the person can try again or knock.
+            doorbell_button_events = []
+
     while threads_should_run:
         try:
             item = doorbell_button_event_queue.get(block=False)
@@ -128,42 +168,29 @@ def doorbell_button_press_processor_loop():
         now = datetime.datetime.now()
 
         if len(doorbell_button_events) > 0:
-            if is_complete_event_sequence(doorbell_button_events) and (
-                (
-                    len(doorbell_button_events) == 2
-                    and now - doorbell_button_events[-1][1] > SINGLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY
-                )
-                or (
-                    len(doorbell_button_events) > 2
-                    and now - doorbell_button_events[-1][1] > MULTIPLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY
-                )
-            ):
-                log(f"processing events: {events_str(doorbell_button_events)}")
-                if events_match_presses_secret(doorbell_button_events, DOOR_OPEN_BUTTON_PRESSES_SECRET):
-                    if access_allowed("office", now):
-                        should_open_door = True
-                elif events_match_presses_secret(doorbell_button_events, DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE):
-                    should_open_door = True
-                else:
-                    if len(doorbell_button_events) <= 2 * DOOR_OPEN_BUTTON_DOORBELL_SOUND_MAX_PRESSES:
-                        should_ring_doorbell = True
-
+            if free_office_access_enabled() and any([e[0] == "down" for e in doorbell_button_events]):
+                should_open_door = True
                 doorbell_button_events = []
-
-            if (
-                not is_complete_event_sequence(doorbell_button_events)
-                and now - doorbell_button_events[-1][1] > INVALID_PRESS_SEQUENCE_CLEAR_TIMEOUT
-            ):
-                log(f"resetting invalid events: {events_str(doorbell_button_events)}")
-                # Either spurious GPIO event or too much switch bounce. Do nothing, the person can try again or knock.
-                doorbell_button_events = []
+            else:
+                process_button_event_sequence()
 
         sleep(BUSY_WAIT_SLEEP_DURATION)
 
 
-# This is a test implementation that beeps on every button state change
+def free_office_access_enabled():
+    global free_office_access
+    global last_ui_button_pressed_at
+
+    return free_office_access and (
+        datetime.datetime.now() - last_ui_button_pressed_at <= datetime.timedelta(seconds=FREE_OFFICE_ACCESS_DURATION)
+    )
+
+
+# Enable office access for 1 hour after button press
 def ui_button_press_processor_loop():
     global ui_button_event_queue
+    global free_office_access
+    global last_ui_button_pressed_at
 
     ui_button_events = []
 
@@ -175,9 +202,18 @@ def ui_button_press_processor_loop():
         except Empty:
             pass
 
-        if len(ui_button_events) > 0:
-            buzzer_queue.put(CHIRPS["test"])
-            ui_button_events = []
+        for e in ui_button_events:
+            if e[0] == "down":  # button pressed since last check?
+                last_ui_button_pressed_at = e[1]
+                buzzer_queue.put(CHIRPS["beep"])
+                if free_office_access_enabled():
+                    free_office_access = False
+                else:
+                    free_office_access = True
+
+                break
+
+        ui_button_events = []
 
         sleep(BUSY_WAIT_SLEEP_DURATION)
 
@@ -260,10 +296,14 @@ def heartbeat_loop():
     global threads_should_run
 
     while threads_should_run:
+        # blink faster if free office access enabled
+        period = HEARTBEAT_PERIOD_FAST if free_office_access_enabled() else HEARTBEAT_PERIOD
+        assert period > HEARTBEAT_BLINK
+
         GPIO.output(HEARTBEAT_OUTPUT_GPIO, GPIO.HIGH)
-        sleep(0.005)
+        sleep(HEARTBEAT_BLINK)
         GPIO.output(HEARTBEAT_OUTPUT_GPIO, GPIO.LOW)
-        sleep(1.495)
+        sleep(period - HEARTBEAT_BLINK)
 
 
 def access_allowed(kind, time):
@@ -390,6 +430,7 @@ if __name__ == "__main__":
 
     global should_open_door
     global should_ring_doorbell
+    global free_office_access
 
     # Communication doorbell_button_handler => doorbell_button_press_processor_loop
     # stores tuples (press start time, press end time)
@@ -410,6 +451,7 @@ if __name__ == "__main__":
 
     should_open_door = False
     should_ring_doorbell = False
+    free_office_access = False  # if True, office door is opened immediately when doorbell button (ERT) is pressed
 
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
