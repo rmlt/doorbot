@@ -2,16 +2,16 @@
 
 import datetime
 import re
-from settings import *
 import signal
 import sys
 import threading
+from queue import Empty, Queue
 from threading import Thread
 from time import sleep
-from queue import Empty, Queue
 
 import RPi.GPIO as GPIO
 
+from settings import *
 
 # GPIO 0-8 have default pull-ups
 # GPIO 9-27 have default pull-downs
