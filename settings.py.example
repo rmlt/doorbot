@@ -4,7 +4,7 @@ DOOR_OPENING_TIME_RANGE = {
     "office": ("mon-fri", "09:00", "18:00"),
 }
 
-# Secret doorbell button keypress sequences that open the office door
+# Secret doorbell button keypress sequences that open the office door. Must start with a short press (.)
 DOOR_OPEN_BUTTON_PRESSES_SECRET = ".-.-"  # works during DOOR_OPENING_TIME_RANGE
 DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE = "...---..."  # works anytime
 

@@ -39,7 +39,7 @@ LONG_PRESS_MIN = datetime.timedelta(seconds=1.6)
 SINGLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY = datetime.timedelta(seconds=0.8)
 MULTIPLE_PRESS_VALID_SEQUENCE_PROCESSING_DELAY = datetime.timedelta(seconds=2)
 
-INVALID_PRESS_SEQUENCE_CLEAR_TIMEOUT = datetime.timedelta(seconds=6)  # also max recognizable long press duration
+INVALID_PRESS_SEQUENCE_CLEAR_TIMEOUT = datetime.timedelta(seconds=5)  # also max recognizable long press duration
 
 # Do not ring the doorbell if button pressed more times than this setting.
 # If there are more, the user is most probably trying to enter the code and does not want to ring the bell.
@@ -127,6 +127,10 @@ def doorbell_button_press_processor_loop():
         global should_ring_doorbell
         nonlocal doorbell_button_events
 
+        # First event is "up"? We got out of sync, maybe because of a long first press. Remove event.
+        if len(doorbell_button_events) > 0 and doorbell_button_events[0][0] == "up":
+            doorbell_button_events.pop(0)
+
         if is_complete_event_sequence(doorbell_button_events) and (
             (
                 len(doorbell_button_events) == 2
@@ -147,6 +151,17 @@ def doorbell_button_press_processor_loop():
                 if len(doorbell_button_events) <= 2 * DOOR_OPEN_BUTTON_DOORBELL_SOUND_MAX_PRESSES:
                     should_ring_doorbell = True
 
+            doorbell_button_events = []
+
+        # Special handling of a very long first press - ring before the bell button release.
+        # This assumes that the secret sequence starts with a short press.
+        if (
+            len(doorbell_button_events) == 1
+            and doorbell_button_events[0][0] == "down"
+            and now - doorbell_button_events[0][1] > SHORT_PRESS_MAX
+        ):
+            should_ring_doorbell = True
+            log(f"long first press: {events_str(doorbell_button_events)}, ringing the bell")
             doorbell_button_events = []
 
         if (
@@ -452,6 +467,10 @@ if __name__ == "__main__":
     should_open_door = False
     should_ring_doorbell = False
     free_office_access = False  # if True, office door is opened immediately when doorbell button (ERT) is pressed
+
+    assert (
+        DOOR_OPEN_BUTTON_PRESSES_SECRET[0] == "." and DOOR_OPEN_BUTTON_PRESSES_TOP_SECRET_OVERRIDE[0] == "."
+    ), "Door open secret must start with a short press (.)"
 
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
