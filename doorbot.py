@@ -247,8 +247,6 @@ def door_servo_loop():
 
     while threads_should_run:
         if should_open_door:
-            should_open_door = False
-
             GPIO.output(SERVO_POWER_ENABLE_OUTPUT_GPIO, GPIO.HIGH)
             set_servo_pulse_length(DOOR_HANDLE_DOWN_SERVO_PULSE_LENGTH)
             log("handle down")
@@ -258,6 +256,7 @@ def door_servo_loop():
             sleep(DOOR_HANDLE_MOVEMENT_DURATION)  # handle moving up
             set_servo_pulse_length(0)
             GPIO.output(SERVO_POWER_ENABLE_OUTPUT_GPIO, GPIO.LOW)
+            should_open_door = False
 
         sleep(BUSY_WAIT_SLEEP_DURATION)
 
