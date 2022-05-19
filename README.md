@@ -8,3 +8,9 @@ This software runs on a Raspberry Pi connected to a circuit board that allows it
 * simulate pressing a button on the doorphone
 * move a servo attached to the door handle
 * play sounds
+
+TODO:
+* black, isort
+* split into modules
+* logging instead of printing
+* add some photos
